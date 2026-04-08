@@ -3,54 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>跃迁加速 - 网络加速器</title>
+  <title>跃迁加速 - Quantum Leap Accelerator</title>
   <style>
-    body {
+    /* 基础样式复位 */
+    * {
       margin: 0;
-      font-family: "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', 'Segoe UI', Roboto, sans-serif; /* 使用更具科技感的字体，如果无法加载则使用备用 */
+      background-color: #050509; /* 深色背景基调 */
       color: #fff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      overflow: hidden; /* 防止动态背景溢出 */
+      position: relative;
+    }
+
+    /* 动态粒子背景 (CSS 动画模拟) */
+    .bg-animation {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: radial-gradient(circle at center, #1a1a2e 0%, #050509 100%);
+    }
+
+    .bg-animation::before,
+    .bg-animation::after {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      top: -50%;
+      left: -50%;
+      background-image: 
+        radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 3px),
+        radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 2px),
+        radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 3px);
+      background-size: 550px 550px, 350px 350px, 250px 250px;
+      background-position: 0 0, 40px 60px, 130px 270px;
+      animation: snow 60s linear infinite;
+      opacity: 0.4;
+    }
+
+    .bg-animation::after {
+      background-size: 300px 300px, 200px 200px, 150px 150px;
+      background-position: 110px 110px, 20px 20px, 100px 150px;
+      animation: snow 30s linear infinite;
+      opacity: 0.2;
+    }
+
+    @keyframes snow {
+      to { transform: translateY(100%); }
+    }
+
+    /* 玻璃拟态主体容器 */
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      backdrop-filter: blur(20px); /* 关键：毛玻璃效果 */
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 4rem 3rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
       text-align: center;
+      max-width: 90%;
+      width: 500px;
+      position: relative;
+      overflow: hidden;
     }
+
+    /* 装饰性发光线条 */
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00f2fe, transparent);
+      animation: scanline 3s linear infinite;
+    }
+
+    @keyframes scanline {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    /* 图标样式 */
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.5));
+    }
+
     h1 {
-      font-size: 3rem;
+      font-size: 3.5rem;
+      font-weight: 800;
       margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #fff 0%, #a0a0a0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -1px;
     }
+
     p {
       font-size: 1.2rem;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+      font-weight: 300;
     }
+
+    p strong {
+      color: #00f2fe;
+      font-weight: 600;
+    }
+
+    /* 科技风按钮 */
     a.button {
       display: inline-block;
-      padding: 1rem 2rem;
-      background: #ffce00;
+      padding: 1.2rem 3rem;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
       color: #000;
       font-weight: bold;
-      border-radius: 8px;
+      font-size: 1.1rem;
+      border-radius: 50px;
       text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
+      border: none;
+      cursor: pointer;
     }
+
+    a.button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffce00 0%, #ffea00 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
     a.button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 242, 254, 0.6);
+      color: #000; /* 保持文字颜色 */
     }
+
+    a.button:hover::after {
+      opacity: 1; /* 悬停时渐变切换到金色 */
+    }
+
+    a.button:active {
+      transform: translateY(-1px);
+    }
+
+    /* 页脚 */
     footer {
       position: absolute;
-      bottom: 1rem;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.7);
+      bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+      text-transform: uppercase;
     }
+
+    /* 加载谷歌字体 (可选，需要联网) */
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;600;800&display=swap');
+
   </style>
 </head>
 <body>
-  <h1>跃迁加速</h1>
-  <p>跃过边界，加速世界<br>一键提升网络体验</p>
-  <a class="button" href="https://911988.xyz/">访问订阅链接</a>
-  <footer>© 跃迁加速 | 网络加速器</footer>
+  <div class="bg-animation"></div>
+
+  <div class="container">
+    <div class="icon">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    
+    <h1>跃迁加速</h1>
+    <p>
+      跃过边界，<strong>加速</strong>世界<br>
+      一键提升网络体验，数据如光般穿梭
+    </p>
+    
+    <a class="button" href="https://911988.xyz/">立即购买</a>
+  </div>
+
+  <footer>© 911988.xyz | 网络加速器 - NETWORK ACCELERATOR</footer>
 </body>
 </html>
