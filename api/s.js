@@ -23,22 +23,8 @@ export default async function handler(req, res) {
     const subId = match[1];
 
     const remoteUrl = `${REMOTE_BASE_URL}${subId}`;
-
-    // 👇 请求源站（增加 UA 提高兼容性）
-    const response = await fetch(remoteUrl, {
-      headers: {
-        "User-Agent": "ClashMeta",
-        "Accept": "*/*"
-      }
-    });
-
+    const response = await fetch(remoteUrl);
     if (!response.ok) return res.status(500).send("Failed to fetch remote subscription");
-
-    // ✅ 读取源站 Header（关键）
-    const subscriptionUserinfo = response.headers.get("subscription-userinfo");
-    const contentType = response.headers.get("content-type");
-    const profileUpdateInterval = response.headers.get("profile-update-interval");
-    const contentDisposition = response.headers.get("content-disposition");
 
     const remoteSubBase64 = (await response.text()).trim();
     const decoded = Buffer.from(remoteSubBase64, "base64").toString("utf-8");
@@ -64,40 +50,7 @@ export default async function handler(req, res) {
     });
 
     const fixedSubBase64 = Buffer.from(fixedLines.join("\n"), "utf-8").toString("base64");
-
-    // ✅ ===== Header 透传开始 =====
-
-    // 核心流量信息（最重要）
-    if (subscriptionUserinfo) {
-      res.setHeader("subscription-userinfo", subscriptionUserinfo);
-      // 兼容部分客户端大小写
-      res.setHeader("Subscription-Userinfo", subscriptionUserinfo);
-    }
-
-    // 客户端更新间隔（有些机场会用）
-    if (profileUpdateInterval) {
-      res.setHeader("profile-update-interval", profileUpdateInterval);
-    } else {
-      res.setHeader("profile-update-interval", "6");
-    }
-
-    // 文件下载名称（可选）
-    if (contentDisposition) {
-      res.setHeader("content-disposition", contentDisposition);
-    }
-
-    // content-type 保留
-    if (contentType) {
-      res.setHeader("content-type", contentType);
-    } else {
-      res.setHeader("Content-Type", "text/plain;charset=utf-8");
-    }
-
-    // 禁止缓存（避免订阅不更新）
-    res.setHeader("Cache-Control", "no-cache");
-
-    // ✅ ===== Header 透传结束 =====
-
+    res.setHeader("Content-Type", "text/plain;charset=utf-8");
     res.status(200).send(fixedSubBase64);
 
   } catch (err) {
