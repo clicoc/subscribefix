@@ -23,8 +23,20 @@ export default async function handler(req, res) {
     const subId = match[1];
 
     const remoteUrl = `${REMOTE_BASE_URL}${subId}`;
-    const response = await fetch(remoteUrl);
+
+    // 👇 请求源站（增加 UA 提高兼容性）
+    const response = await fetch(remoteUrl, {
+      headers: {
+        "User-Agent": "ClashMeta",
+        "Accept": "*/*"
+      }
+    });
+
     if (!response.ok) return res.status(500).send("Failed to fetch remote subscription");
+
+    // ✅ 读取源站 Header（关键）
+    const subscriptionUserinfo = response.headers.get("subscription-userinfo");
+    const contentType = response.headers.get("content-type");
 
     const remoteSubBase64 = (await response.text()).trim();
     const decoded = Buffer.from(remoteSubBase64, "base64").toString("utf-8");
@@ -50,7 +62,22 @@ export default async function handler(req, res) {
     });
 
     const fixedSubBase64 = Buffer.from(fixedLines.join("\n"), "utf-8").toString("base64");
-    res.setHeader("Content-Type", "text/plain;charset=utf-8");
+
+    // ✅ 返回 Header（核心）
+    if (subscriptionUserinfo) {
+      res.setHeader("subscription-userinfo", subscriptionUserinfo);
+    }
+
+    // 可选：透传 content-type（避免客户端识别异常）
+    if (contentType) {
+      res.setHeader("content-type", contentType);
+    } else {
+      res.setHeader("Content-Type", "text/plain;charset=utf-8");
+    }
+
+    // 可选：避免缓存
+    res.setHeader("Cache-Control", "no-cache");
+
     res.status(200).send(fixedSubBase64);
 
   } catch (err) {
