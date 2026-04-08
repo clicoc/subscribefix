@@ -37,6 +37,8 @@ export default async function handler(req, res) {
     // ✅ 读取源站 Header（关键）
     const subscriptionUserinfo = response.headers.get("subscription-userinfo");
     const contentType = response.headers.get("content-type");
+    const profileUpdateInterval = response.headers.get("profile-update-interval");
+    const contentDisposition = response.headers.get("content-disposition");
 
     const remoteSubBase64 = (await response.text()).trim();
     const decoded = Buffer.from(remoteSubBase64, "base64").toString("utf-8");
@@ -63,20 +65,38 @@ export default async function handler(req, res) {
 
     const fixedSubBase64 = Buffer.from(fixedLines.join("\n"), "utf-8").toString("base64");
 
-    // ✅ 返回 Header（核心）
+    // ✅ ===== Header 透传开始 =====
+
+    // 核心流量信息（最重要）
     if (subscriptionUserinfo) {
       res.setHeader("subscription-userinfo", subscriptionUserinfo);
+      // 兼容部分客户端大小写
+      res.setHeader("Subscription-Userinfo", subscriptionUserinfo);
     }
 
-    // 可选：透传 content-type（避免客户端识别异常）
+    // 客户端更新间隔（有些机场会用）
+    if (profileUpdateInterval) {
+      res.setHeader("profile-update-interval", profileUpdateInterval);
+    } else {
+      res.setHeader("profile-update-interval", "6");
+    }
+
+    // 文件下载名称（可选）
+    if (contentDisposition) {
+      res.setHeader("content-disposition", contentDisposition);
+    }
+
+    // content-type 保留
     if (contentType) {
       res.setHeader("content-type", contentType);
     } else {
       res.setHeader("Content-Type", "text/plain;charset=utf-8");
     }
 
-    // 可选：避免缓存
+    // 禁止缓存（避免订阅不更新）
     res.setHeader("Cache-Control", "no-cache");
+
+    // ✅ ===== Header 透传结束 =====
 
     res.status(200).send(fixedSubBase64);
 
