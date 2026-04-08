@@ -1,13 +1,18 @@
 import fetch from "node-fetch";
 
-const REMOTE_BASE_URL = process.env.REMOTE_BASE_URL || "https://qianyue.cc.cd/s/";
+// 指定要修改 security=tls 的节点数字
+const nodesToFix = ["2", "3", "4"];
 
-// 只要 # 后的内容包含这些数字，就修改 security
-const nodesToFix = ["2", "3", "4", "5", "6", "7", "10"];
+// REMOTE_BASE_URL 必须在 Vercel 环境变量里设置，比如 https://xxx.cc.cd/s/
+const REMOTE_BASE_URL = process.env.REMOTE_BASE_URL;
+
+if (!REMOTE_BASE_URL) {
+  throw new Error("Please set REMOTE_BASE_URL in environment variables");
+}
 
 export default async function handler(req, res) {
   try {
-    // 提取 subId
+    // 匹配 /s/:subId
     const match = req.url.match(/\/s\/([a-zA-Z0-9]+)/);
     if (!match) return res.status(400).send("Missing subscription id");
     const subId = match[1];
