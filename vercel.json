@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "routes": [
-    { "src": "/(.*)", "dest": "/[sub].js" }
+  "rewrites": [
+    { "source": "/s/:subId", "destination": "/api/s.js" }
   ]
 }
