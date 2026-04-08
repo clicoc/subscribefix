@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 
-// REMOTE_BASE_URL 和 NODES_TO_FIX 都从环境变量获取,比如NODES_TO_FIX 值 2,3,4   REMOTE_BASE_URL 值 https://xxx.cc.cd/s/
+// REMOTE_BASE_URL 和 NODES_TO_FIX 都从环境变量获取
 const REMOTE_BASE_URL = process.env.REMOTE_BASE_URL;
 const NODES_TO_FIX = process.env.NODES_TO_FIX;
 
@@ -26,6 +26,9 @@ export default async function handler(req, res) {
     const response = await fetch(remoteUrl);
     if (!response.ok) return res.status(500).send("Failed to fetch remote subscription");
 
+    // ⭐ 获取 subscription-userinfo
+    const subUserInfo = response.headers.get("subscription-userinfo");
+
     const remoteSubBase64 = (await response.text()).trim();
     const decoded = Buffer.from(remoteSubBase64, "base64").toString("utf-8");
 
@@ -50,7 +53,15 @@ export default async function handler(req, res) {
     });
 
     const fixedSubBase64 = Buffer.from(fixedLines.join("\n"), "utf-8").toString("base64");
+
     res.setHeader("Content-Type", "text/plain;charset=utf-8");
+
+    // ⭐ 透传 header（关键）
+    if (subUserInfo) {
+      res.setHeader("subscription-userinfo", subUserInfo);
+      res.setHeader("Subscription-Userinfo", subUserInfo); // 兼容客户端
+    }
+
     res.status(200).send(fixedSubBase64);
 
   } catch (err) {
