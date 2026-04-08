@@ -1,14 +1,19 @@
 import fetch from "node-fetch";
 
-// 指定要修改 security=tls 的节点数字
-const nodesToFix = ["2", "3", "4"];
-
-// REMOTE_BASE_URL 必须在 Vercel 环境变量里设置，比如 https://xxx.cc.cd/s/
+// REMOTE_BASE_URL 和 NODES_TO_FIX 都从环境变量获取,比如NODES_TO_FIX 值 2,3,4   REMOTE_BASE_URL 值 https://xxx.cc.cd/s/
 const REMOTE_BASE_URL = process.env.REMOTE_BASE_URL;
+const NODES_TO_FIX = process.env.NODES_TO_FIX;
 
 if (!REMOTE_BASE_URL) {
   throw new Error("Please set REMOTE_BASE_URL in environment variables");
 }
+
+if (!NODES_TO_FIX) {
+  throw new Error("Please set NODES_TO_FIX in environment variables (comma separated)");
+}
+
+// 转成数组
+const nodesToFix = NODES_TO_FIX.split(",").map(s => s.trim());
 
 export default async function handler(req, res) {
   try {
