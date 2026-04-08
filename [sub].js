@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     }
 
     // 修改节点 security
-    const nodesToFix = ['节点2', '节点3', '节点4'];
+    const nodesToFix = ['节点2', '节点3', '节点4'， '节点5', '节点6', '节点7', '节点10'];
     const lines = decoded.split('\n');
     const fixedLines = lines.map(line => {
       for (const node of nodesToFix) {
