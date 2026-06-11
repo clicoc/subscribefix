@@ -72,8 +72,8 @@ export default async function handler(req, res) {
                 proxy.servername = proxy["ws-opts"].headers.Host;
               }
 
-              // ⭐ 改进 4：添加指纹以提高 TLS 伪装的稳定性（Meta 内核推荐）
-              proxy["client-fingerprint"] = "chrome";
+              // ⭐强制指定 ALPN 为 http/1.1，避免 h2 WebSocket 握手失败导致 403
+                proxy.alpn = ["http/1.1"];
             }
           }
         });
