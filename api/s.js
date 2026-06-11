@@ -37,8 +37,9 @@ export default async function handler(req, res) {
     else if (identifiers.includes("stash")) targetClient = "stash";
     else if (identifiers.includes("surge")) targetClient = "surge";
     else if (identifiers.includes("surfboard")) targetClient = "surfboard";
-    else if (identifiers.includes("meta") || identifiers.includes("mihomo")) targetClient = "meta";
-    else if (identifiers.includes("clash")) targetClient = "clash";
+    else if (identifiers.includes("meta") || identifiers.includes("mihomo") || identifiers.includes("clash")) {
+        targetClient = "meta";
+    }
 
     // 强制向源站请求对应的格式 (如果不带 flag，Xboard 可能默认输出 base64)
     const remoteUrl = targetClient !== "base64" 
