@@ -67,10 +67,11 @@ export default async function handler(req, res) {
             if (needFix && proxy.type === "vless") {
               proxy.tls = true; // 修改为 tls 开启
               
-               ⭐ 改进 3：自动提取 ws-opts 中的 Host 作为 TLS 的 SNI(servername)
+              // ⭐ 改进 3：自动提取 ws-opts 中的 Host 作为 TLS 的 SNI(servername)
               if (proxy["ws-opts"] && proxy["ws-opts"].headers && proxy["ws-opts"].headers.Host) {
                 proxy.servername = proxy["ws-opts"].headers.Host;
               }
+
             }
           }
         });
