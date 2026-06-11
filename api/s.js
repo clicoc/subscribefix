@@ -68,12 +68,9 @@ export default async function handler(req, res) {
               proxy.tls = true; // 修改为 tls 开启
               
               // ⭐ 改进 3：自动提取 ws-opts 中的 Host 作为 TLS 的 SNI(servername)
-              if (proxy["ws-opts"] && proxy["ws-opts"].headers && proxy["ws-opts"].headers.Host) {
-                proxy.servername = proxy["ws-opts"].headers.Host;
-              }
-
-              // ⭐强制指定 ALPN 为 http/1.1，避免 h2 WebSocket 握手失败导致 403
-                proxy.alpn = ["http/1.1"];
+              //if (proxy["ws-opts"] && proxy["ws-opts"].headers && proxy["ws-opts"].headers.Host) {
+               // proxy.servername = proxy["ws-opts"].headers.Host;
+              //}
             }
           }
         });
